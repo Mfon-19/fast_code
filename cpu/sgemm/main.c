@@ -86,6 +86,7 @@ int main(int argc, char **argv) {
   SgemmImpl implementations[] = {
       {"sgemm_01 (Base Naive)", sgemm_01},
       {"sgemm_02 (Loop Reordered)", sgemm_02},
+      {"sgemm_03 (Tiling)", sgemm_03},
       // Future implementations go here:
       // {"sgemm_03 (Tiling)", sgemm_03},
   };
@@ -94,7 +95,9 @@ int main(int argc, char **argv) {
   // Compute reference output using baseline (sgemm_01)
   printf("Computing reference output using %s...\n", implementations[0].name);
   memset(C_ref, 0, matrix_bytes);
+  double reference_start = get_time_sec();
   implementations[0].fn(A, B, C_ref, N);
+  double reference_time = get_time_sec() - reference_start;
   printf("Reference computation complete.\n\n");
 
   printf("%-30s | %-12s | %-12s | %-12s | %-14s\n", "Implementation", "Time (ms)",
@@ -103,23 +106,30 @@ int main(int argc, char **argv) {
 
   for (int i = 0; i < num_impls; i++) {
     SgemmImpl impl = implementations[i];
+    double min_time = reference_time;
+    const float *result = C_ref;
 
-    // Warmup runs
-    for (int w = 0; w < WARMUP_RUNS; w++) {
-      memset(C_test, 0, matrix_bytes);
-      impl.fn(A, B, C_test, N);
-    }
+    // The reference computation is also the benchmark run for the baseline.
+    if (i != 0) {
+      result = C_test;
 
-    // Benchmark runs
-    double min_time = 1e9;
-    for (int r = 0; r < BENCHMARK_RUNS; r++) {
-      memset(C_test, 0, matrix_bytes);
-      double start = get_time_sec();
-      impl.fn(A, B, C_test, N);
-      double end = get_time_sec();
-      double elapsed = end - start;
-      if (elapsed < min_time) {
-        min_time = elapsed;
+      // Warmup runs
+      for (int w = 0; w < WARMUP_RUNS; w++) {
+        memset(C_test, 0, matrix_bytes);
+        impl.fn(A, B, C_test, N);
+      }
+
+      // Benchmark runs
+      min_time = 1e9;
+      for (int r = 0; r < BENCHMARK_RUNS; r++) {
+        memset(C_test, 0, matrix_bytes);
+        double start = get_time_sec();
+        impl.fn(A, B, C_test, N);
+        double end = get_time_sec();
+        double elapsed = end - start;
+        if (elapsed < min_time) {
+          min_time = elapsed;
+        }
       }
     }
 
@@ -129,9 +139,7 @@ int main(int argc, char **argv) {
 
     printf("%-30s | %12.2f | %12.2f | %11.2f%% |", impl.name, time_ms, gflops, pct_peak);
 
-    // Verification (for baseline, compare against itself; for future impls,
-    // compare against C_ref)
-    verify_result(C_ref, C_test, N);
+    verify_result(C_ref, result, N);
     printf("\n");
   }
 

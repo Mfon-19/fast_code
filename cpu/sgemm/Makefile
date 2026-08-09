@@ -1,5 +1,5 @@
 CC ?= gcc
-CFLAGS ?= -O2 -Wall -Wextra -std=c99
+CFLAGS ?= -O3 -march=native -mprefer-vector-width=512 -Wall -Wextra -std=c99
 LDFLAGS ?= -lm
 
 N ?= 512
