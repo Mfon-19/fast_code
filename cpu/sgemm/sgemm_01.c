@@ -1,10 +1,10 @@
 /*
-    Base naive matmul
+    Base naive SGEMM
 */
 
-#include "matmul.h"
+#include "sgemm.h"
 
-void matmul_01(const float *A, const float *B, float *C, const int N) {
+void sgemm_01(const float *A, const float *B, float *C, const int N) {
   for (int i = 0; i < N; i++) {
     for (int j = 0; j < N; j++) {
       for (int k = 0; k < N; k++) {

@@ -1,6 +1,6 @@
 #define _POSIX_C_SOURCE 200809L
 
-#include "matmul.h"
+#include "sgemm.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,7 +16,6 @@
 
 // Theoretical All-Core Peak GFLOPS for 11th Gen i5 (4 cores @ 3.8 GHz * 64 FLOPs/cycle = 972.8 GFLOPS)
 #define PEAK_GFLOPS 972.8
-
 
 static void *aligned_alloc_mem(size_t size) {
   void *ptr = NULL;
@@ -66,7 +65,7 @@ int main(int argc, char **argv) {
   }
 
   printf("=========================================================\n");
-  printf(" CPU Matrix Multiplication Benchmark Harness (N = %d)\n", N);
+  printf(" CPU SGEMM Benchmark Harness (N = %d)\n", N);
   printf("=========================================================\n\n");
 
   // Total floating point operations: 2 * N^3 (N^3 multiplies + N^3 adds)
@@ -84,16 +83,15 @@ int main(int argc, char **argv) {
   init_matrix(B, N);
 
   // List of implementations to benchmark
-  MatmulImpl implementations[] = {
-      {"matmul_01 (Base Naive)", matmul_01},
-      {"matmul_02 (Loop Reordered)", matmul_02}
+  SgemmImpl implementations[] = {
+      {"sgemm_01 (Base Naive)", sgemm_01},
+      {"sgemm_02 (Loop Reordered)", sgemm_02},
       // Future implementations go here:
-      // {"matmul_02 (Loop Reordered)", matmul_02},
-      // {"matmul_03 (Tiling)", matmul_03},
+      // {"sgemm_03 (Tiling)", sgemm_03},
   };
   int num_impls = sizeof(implementations) / sizeof(implementations[0]);
 
-  // Compute reference output using baseline (matmul_01)
+  // Compute reference output using baseline (sgemm_01)
   printf("Computing reference output using %s...\n", implementations[0].name);
   memset(C_ref, 0, matrix_bytes);
   implementations[0].fn(A, B, C_ref, N);
@@ -104,7 +102,7 @@ int main(int argc, char **argv) {
   printf("---------------------------------------------------------------------------------------------------\n");
 
   for (int i = 0; i < num_impls; i++) {
-    MatmulImpl impl = implementations[i];
+    SgemmImpl impl = implementations[i];
 
     // Warmup runs
     for (int w = 0; w < WARMUP_RUNS; w++) {

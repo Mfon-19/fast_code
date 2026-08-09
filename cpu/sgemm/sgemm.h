@@ -1,0 +1,22 @@
+#ifndef SGEMM_H
+#define SGEMM_H
+
+#include <stddef.h>
+
+// Standard SGEMM (Single Precision General Matrix Multiplication) Function Pointer
+// A: N x N input matrix (row-major)
+// B: N x N input matrix (row-major)
+// C: N x N output matrix (row-major)
+// N: Dimension size
+typedef void (*sgemm_fn)(const float *A, const float *B, float *C, const int N);
+
+typedef struct {
+  const char *name;
+  sgemm_fn fn;
+} SgemmImpl;
+
+// Implementation prototypes
+void sgemm_01(const float *A, const float *B, float *C, const int N);
+void sgemm_02(const float *A, const float *B, float *C, const int N);
+
+#endif // SGEMM_H

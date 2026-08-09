@@ -5,7 +5,7 @@ LDFLAGS ?= -lm
 N ?= 512
 
 TARGET = main
-SRCS = main.c $(wildcard matmul_*.c)
+SRCS = main.c $(wildcard sgemm_*.c)
 OBJS = $(SRCS:.c=.o)
 
 .PHONY: all clean run
@@ -15,7 +15,7 @@ all: $(TARGET)
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
 
-%.o: %.c matmul.h
+%.o: %.c sgemm.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 run: $(TARGET)
