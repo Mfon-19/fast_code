@@ -18,5 +18,6 @@ typedef struct {
 
 // Implementation prototypes
 void matmul_01(const float *A, const float *B, float *C, const int N);
+void matmul_02(const float *A, const float *B, float *C, const int N);
 
 #endif // MATMUL_H

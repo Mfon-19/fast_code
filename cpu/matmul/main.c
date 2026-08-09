@@ -14,6 +14,10 @@
 #define BENCHMARK_RUNS 3
 #define TOLERANCE 1e-4f
 
+// Theoretical All-Core Peak GFLOPS for 11th Gen i5 (4 cores @ 3.8 GHz * 64 FLOPs/cycle = 972.8 GFLOPS)
+#define PEAK_GFLOPS 972.8
+
+
 static void *aligned_alloc_mem(size_t size) {
   void *ptr = NULL;
   if (posix_memalign(&ptr, ALIGNMENT, size) != 0) {
@@ -44,10 +48,10 @@ static int verify_result(const float *C_ref, const float *C_test, int N) {
     }
   }
   if (max_diff > TOLERANCE) {
-    printf(" [FAIL]");
+    printf(" FAIL");
     return 0;
   }
-  printf(" [PASS]");
+  printf(" PASS");
   return 1;
 }
 
@@ -82,6 +86,7 @@ int main(int argc, char **argv) {
   // List of implementations to benchmark
   MatmulImpl implementations[] = {
       {"matmul_01 (Base Naive)", matmul_01},
+      {"matmul_02 (Loop Reordered)", matmul_02}
       // Future implementations go here:
       // {"matmul_02 (Loop Reordered)", matmul_02},
       // {"matmul_03 (Tiling)", matmul_03},
@@ -94,10 +99,9 @@ int main(int argc, char **argv) {
   implementations[0].fn(A, B, C_ref, N);
   printf("Reference computation complete.\n\n");
 
-  printf("%-30s | %-12s | %-12s | %-20s\n", "Implementation", "Time (ms)",
-         "GFLOPS", "Verification");
-  printf("---------------------------------------------------------------------"
-         "--------------------\n");
+  printf("%-30s | %-12s | %-12s | %-12s | %-14s\n", "Implementation", "Time (ms)",
+         "GFLOPS", "% Peak", "Verification");
+  printf("---------------------------------------------------------------------------------------------------\n");
 
   for (int i = 0; i < num_impls; i++) {
     MatmulImpl impl = implementations[i];
@@ -123,8 +127,9 @@ int main(int argc, char **argv) {
 
     double time_ms = min_time * 1000.0;
     double gflops = gflops_factor / min_time;
+    double pct_peak = (gflops / PEAK_GFLOPS) * 100.0;
 
-    printf("%-30s | %12.2f | %12.2f |", impl.name, time_ms, gflops);
+    printf("%-30s | %12.2f | %12.2f | %11.2f%% |", impl.name, time_ms, gflops, pct_peak);
 
     // Verification (for baseline, compare against itself; for future impls,
     // compare against C_ref)
@@ -132,8 +137,7 @@ int main(int argc, char **argv) {
     printf("\n");
   }
 
-  printf("---------------------------------------------------------------------"
-         "--------------------\n");
+  printf("---------------------------------------------------------------------------------------------------\n");
 
   free(A);
   free(B);

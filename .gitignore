@@ -1,0 +1,31 @@
+# Compiled object files
+*.o
+*.obj
+
+# Dynamic & static libraries
+*.so
+*.a
+*.dylib
+*.dll
+
+# Executables
+main
+*.exe
+bin/
+build/
+out/
+
+# Profiling and coverage outputs
+gmon.out
+perf.data*
+*.gcov
+*.gcda
+*.gcno
+
+# OS & Editor generated files
+.DS_Store
+*.swp
+*~
+.vscode/
+.idea/
+compile_commands.json
