@@ -1,5 +1,5 @@
 /*
-    Base naive SGEMM
+  Base naive SGEMM
 */
 
 #include "sgemm.h"
