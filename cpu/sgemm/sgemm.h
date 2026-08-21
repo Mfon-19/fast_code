@@ -22,5 +22,9 @@ void sgemm_02(const float *__restrict A, const float *__restrict B,
               float *__restrict C, const int N);
 void sgemm_03(const float *__restrict A, const float *__restrict B,
               float *__restrict C, const int N);
+void sgemm_04(const float *__restrict A, const float *__restrict B,
+              float *__restrict C, const int N);
+void sgemm_05(const float *__restrict A, const float *__restrict B,
+              float *__restrict C, const int N);
 
 #endif // SGEMM_H

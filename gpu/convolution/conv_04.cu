@@ -9,7 +9,7 @@
 
 __constant__ float F[2 * FILTER_RADIUS + 1][2 * FILTER_RADIUS + 1];
 
-/**
+/*
   In the previous tiled convolutin kernel, we had complexity due to
   loading of halo cells; the input tile was larger than the output.
   However, we can observe that the halo cells of some input tile

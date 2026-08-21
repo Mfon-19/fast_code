@@ -12,10 +12,12 @@
 #define DEFAULT_N 1024
 #define WARMUP_RUNS 1
 #define BENCHMARK_RUNS 3
-#define TOLERANCE 1e-4f
+#define ABS_TOLERANCE 1e-4f
+#define REL_TOLERANCE 1e-5f
 
-// Theoretical All-Core Peak GFLOPS for 11th Gen i5 (4 cores @ 3.8 GHz * 64 FLOPs/cycle = 972.8 GFLOPS)
-#define PEAK_GFLOPS 972.8
+// Nominal all-core AVX-512 peak for this i5-1135G7:
+// 4 cores * 3.8 GHz * 1 FMA/cycle * 16 floats/FMA * 2 FLOPs/float.
+#define PEAK_GFLOPS 486.4
 
 static void *aligned_alloc_mem(size_t size) {
   void *ptr = NULL;
@@ -40,13 +42,18 @@ static void init_matrix(float *matrix, int N) {
 
 static int verify_result(const float *C_ref, const float *C_test, int N) {
   float max_diff = 0.0f;
+  int passed = 1;
   for (int i = 0; i < N * N; i++) {
     float diff = fabsf(C_ref[i] - C_test[i]);
+    float tolerance = ABS_TOLERANCE + REL_TOLERANCE * fabsf(C_ref[i]);
     if (diff > max_diff) {
       max_diff = diff;
     }
+    if (diff > tolerance) {
+      passed = 0;
+    }
   }
-  if (max_diff > TOLERANCE) {
+  if (!passed) {
     printf(" FAIL");
     return 0;
   }
@@ -87,8 +94,8 @@ int main(int argc, char **argv) {
       {"sgemm_01 (Base Naive)", sgemm_01},
       {"sgemm_02 (Loop Reordered)", sgemm_02},
       {"sgemm_03 (Tiling)", sgemm_03},
-      // Future implementations go here:
-      // {"sgemm_03 (Tiling)", sgemm_03},
+      {"sgemm_04 (AVX-512 4x64)", sgemm_04},
+      {"sgemm_05 (Parallel)", sgemm_05},
   };
   int num_impls = sizeof(implementations) / sizeof(implementations[0]);
 
