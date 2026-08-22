@@ -1,22 +1,20 @@
 /*
-  Hand-written AVX-512 SGEMM
+  Parallel SGEMM
 
-  This kernel computes four rows by 64 columns at a time. Sixteen ZMM
-  registers hold the 4x64 C micro-tile while each group of four B vectors is
-  loaded once and reused across all four rows. C is written only after all 64
-  k contributions have been accumulated.
+  Parallelize independent row tiles across the machine's processors with
+  OpenMP.
 */
 
 #include "sgemm.h"
-
 #include <immintrin.h>
 
-#define TILE_SIZE 128
+#define TILE_SIZE 64
 #define ROW_BLOCK 4
 
-void sgemm_05(const float *__restrict A, const float *__restrict B,
+void sgemm_06(const float *__restrict A, const float *__restrict B,
               float *__restrict C, const int N) {
-
+                
+#pragma omp parallel for
   for (int io = 0; io < N; io += TILE_SIZE) {
     for (int ko = 0; ko < N; ko += TILE_SIZE) {
       for (int jo = 0; jo < N; jo += TILE_SIZE) {
@@ -53,29 +51,25 @@ void sgemm_05(const float *__restrict A, const float *__restrict B,
             const __m512 b2 = _mm512_loadu_ps(b + 32);
             const __m512 b3 = _mm512_loadu_ps(b + 48);
 
-            const __m512 a0 =
-                _mm512_set1_ps(A[(size_t)(i + 0) * N + k]);
+            const __m512 a0 = _mm512_set1_ps(A[(size_t)(i + 0) * N + k]);
             c00 = _mm512_fmadd_ps(a0, b0, c00);
             c01 = _mm512_fmadd_ps(a0, b1, c01);
             c02 = _mm512_fmadd_ps(a0, b2, c02);
             c03 = _mm512_fmadd_ps(a0, b3, c03);
 
-            const __m512 a1 =
-                _mm512_set1_ps(A[(size_t)(i + 1) * N + k]);
+            const __m512 a1 = _mm512_set1_ps(A[(size_t)(i + 1) * N + k]);
             c10 = _mm512_fmadd_ps(a1, b0, c10);
             c11 = _mm512_fmadd_ps(a1, b1, c11);
             c12 = _mm512_fmadd_ps(a1, b2, c12);
             c13 = _mm512_fmadd_ps(a1, b3, c13);
 
-            const __m512 a2 =
-                _mm512_set1_ps(A[(size_t)(i + 2) * N + k]);
+            const __m512 a2 = _mm512_set1_ps(A[(size_t)(i + 2) * N + k]);
             c20 = _mm512_fmadd_ps(a2, b0, c20);
             c21 = _mm512_fmadd_ps(a2, b1, c21);
             c22 = _mm512_fmadd_ps(a2, b2, c22);
             c23 = _mm512_fmadd_ps(a2, b3, c23);
 
-            const __m512 a3 =
-                _mm512_set1_ps(A[(size_t)(i + 3) * N + k]);
+            const __m512 a3 = _mm512_set1_ps(A[(size_t)(i + 3) * N + k]);
             c30 = _mm512_fmadd_ps(a3, b0, c30);
             c31 = _mm512_fmadd_ps(a3, b1, c31);
             c32 = _mm512_fmadd_ps(a3, b2, c32);

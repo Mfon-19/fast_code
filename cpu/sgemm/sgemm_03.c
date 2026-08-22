@@ -16,14 +16,10 @@
 
 #include "sgemm.h"
 
-#define TILE_SIZE 64
+#define TILE_SIZE 128
 
 void sgemm_03(const float *__restrict A, const float *__restrict B,
               float *__restrict C, const int N) {
-
-  // A = __builtin_assume_aligned(A, 32);
-  // B = __builtin_assume_aligned(B, 32);
-  // C = __builtin_assume_aligned(C, 32);
 
   for (int io = 0; io < N; io += TILE_SIZE) {
     for (int ko = 0; ko < N; ko += TILE_SIZE) {

@@ -94,8 +94,12 @@ int main(int argc, char **argv) {
       {"sgemm_01 (Base Naive)", sgemm_01},
       {"sgemm_02 (Loop Reordered)", sgemm_02},
       {"sgemm_03 (Tiling)", sgemm_03},
-      {"sgemm_04 (AVX-512 4x64)", sgemm_04},
-      {"sgemm_05 (Parallel)", sgemm_05},
+      {"sgemm_04 (Two-Level Tiling)", sgemm_04},
+      {"sgemm_05 (AVX-512 4x64)", sgemm_05},
+      {"sgemm_06 (Parallel)", sgemm_06},
+#ifdef HAVE_MKL
+      {"Intel MKL (cblas_sgemm)", sgemm_mkl},
+#endif
   };
   int num_impls = sizeof(implementations) / sizeof(implementations[0]);
 

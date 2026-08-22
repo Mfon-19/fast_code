@@ -30,3 +30,6 @@ perf.data*
 .vscode/
 .idea/
 compile_commands.json
+
+# Downloaded Intel oneMKL installers
+intel-onemkl-*.sh

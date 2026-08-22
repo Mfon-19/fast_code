@@ -26,5 +26,11 @@ void sgemm_04(const float *__restrict A, const float *__restrict B,
               float *__restrict C, const int N);
 void sgemm_05(const float *__restrict A, const float *__restrict B,
               float *__restrict C, const int N);
+void sgemm_06(const float *__restrict A, const float *__restrict B,
+              float *__restrict C, const int N);
+#ifdef HAVE_MKL
+void sgemm_mkl(const float *__restrict A, const float *__restrict B,
+               float *__restrict C, const int N);
+#endif
 
 #endif // SGEMM_H
