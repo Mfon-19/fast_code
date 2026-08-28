@@ -1,2 +1,24 @@
-more ideas
-- spmv
+## More ideas
+
+- SpMV
+- Memcpy
+- Memset
+- Sum reduction
+- Max reduction
+- Dot product
+- Prefix sum (scan)
+- Matrix transpose
+- Direct convolution
+- im2col
+- GEMM-based convolution
+- Softmax
+- Layer normalization
+- SAXPY
+- Other BLAS-1 operations
+- Radix sort
+- Bitonic mergesort
+- Histogram
+- String search
+- `memchr`
+- Parallel reduction
+- Parallel radix sort
