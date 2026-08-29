@@ -17,7 +17,7 @@ __global__ void reduction_04(float *input, float *output) {
   unsigned int segment = 2 * blockDim.x * blockIdx.x;
   unsigned int i = segment + threadIdx.x;
   unsigned int t = threadIdx.x;
-  input_s[t] = input[t] + input[t + BLOCK_DIM];
+  input_s[t] = input[i] + input[i + BLOCK_DIM];
   for (unsigned int stride = blockDim.x / 2; stride >= 1; stride /= 2) {
     __syncthreads();
     if (t < stride) {
