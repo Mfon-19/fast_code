@@ -9,7 +9,7 @@
 /**
   Thread coarsening. Use less threads to do the same work
 */
-__global__ void reduction_04(float *input, float *output) {
+__global__ void reduction_05(float *input, float *output) {
   __shared__ float input_s[BLOCK_DIM];
   // each block works on size blockDim.x * 2 of the input
   unsigned int segment = COARSE_FACTOR * 2 * blockDim.x * blockIdx.x;
